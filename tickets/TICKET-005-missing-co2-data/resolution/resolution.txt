@@ -1,0 +1,24 @@
+# Résolution — TICKET-005
+
+## Problème
+Les dashboards CO2 sont vides malgré des jobs en cours.
+
+## Cause racine
+La colonne `ENERGY` est absente du DataFrame quand carbon_cost_RTE s'exécute.
+L'enhancer de mesure d'énergie (ear_from_db.py ou ear_from_eacct.py) n'a pas été
+exécuté en amont dans la chaîne d'exécution des enhancers. Sans données d'énergie,
+le calcul d'empreinte carbone est impossible.
+
+## Solution apportée
+1. Activer l'enhancer de mesure d'énergie (`ear_from_db.py` ou `ear_from_eacct.py`)
+   dans le pipeline d'enhancers avant `carbon_cost_RTE`
+2. Vérifier que la colonne ENERGY apparaît avant d'exécuter carbon_cost_RTE
+3. Réexécuter le pipeline : les dashboards affichent désormais l'empreinte carbone
+
+## Prévention
+Documenter l'ordre d'exécution des enhancers dans le runbook client. Toujours
+vérifier la présence des colonnes requises avant d'exécuter un enhancer dépendant.
+
+## Impact résolu
+Après réexécution avec le bon ordre d'enhancers, les dashboards CO2 affichent
+désormais l'empreinte carbone (kgCO2eq) et le coût électricité (€) par job.
