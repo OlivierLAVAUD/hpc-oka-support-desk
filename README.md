@@ -80,3 +80,4 @@ make demo
 - Dépôts sources : `./oka_healthchecks`, `./oka_dataenhancers`, `./oka_webhooks` (racine du workspace)
 - Documentation OKA : https://doc.oka.how
 - Site UCit : https://uca.how
+- URL SSH du dépôt : git@ssh.bitbucket.org:lavaud_olivier/hpc-oka-support-desk.git
