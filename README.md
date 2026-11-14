@@ -1,45 +1,82 @@
-**Edit a file, create a new file, and clone from Bitbucket in under 2 minutes**
+# oka-support-desk — POC Ingénieur Support UCit
 
-When you're done, you can delete the content in this README and update the file with details for others getting started with your repository.
+Dépôt de preuve de concept (POC) simulant un portefeuille de 7 tickets clients traités par un ingénieur support UCit sur la plateforme OKA (analytique et supervision HPC).
 
-*We recommend that you open this README in another tab as you perform the tasks below. You can [watch our video](https://youtu.be/0ocf7u76WSo) for a full demo of all the steps in this tutorial. Open the video in a new tab to avoid leaving Bitbucket.*
+## 1. Contexte (candidature)
 
----
+Poste : **Ingénieur Support** — UCit (Montpellier)  
+Produit : **OKA** — plateforme Data Science pour environnements HPC  
+https://uca.how | https://doc.oka.how
 
-## Edit a file
+Ce POC démontre la capacité à analyser les dépôts sources d'extensibilité d'OKA, à qualifier/diagnostiquer/résoudre des tickets clients, et à capitaliser sur l'expérience via une méthode reproductible et des outils IA + HITL.
 
-You’ll start by editing this README file to learn how to edit a file in Bitbucket.
+## 2. Ce que j'ai analysé (les 3 dépôts sources)
 
-1. Click **Source** on the left side.
-2. Click the README.md link from the list of files.
-3. Click the **Edit** button.
-4. Delete the following text: *Delete this line to make a change to the README from Bitbucket.*
-5. After making your change, click **Commit** and then **Commit** again in the dialog. The commit page will open and you’ll see the change you just made.
-6. Go back to the **Source** page.
+Les trois dépôts Git ont été lus en intégralité avant tout codage :
 
----
+| Dépôt | Éléments | Fichiers clés |
+|-------|----------|---------------|
+| `oka_healthchecks` | 40 règles HealthCheck, 9 domaines | `resources/cores_account_quota_rule.py`, `jobs/failed_jobs_rule.py`, `kpi/high_cost_rule.py`, `load/core_load_rule.py` |
+| `oka_dataenhancers` | 7 Data Enhancers, 5 catégories | `costs/costs_demo.py`, `CO2/carbon_cost_RTE.py` |
+| `oka_webhooks` | 4 bridges webhook (SES, Slack, Jira, Reporting) | `oka-slack-bridge/app.py`, `oka-slack-bridge/.service` |
 
-## Create a file
+Tous sous licence Apache 2.0, version `2026.10.0`, testés contre **OKA 3.3.0**.
 
-Next, you’ll add a new file to this repository.
+## 3. Ce que contient ce POC
 
-1. Click the **New file** button at the top of the **Source** page.
-2. Give the file a filename of **contributors.txt**.
-3. Enter your name in the empty file space.
-4. Click **Commit** and then **Commit** again in the dialog.
-5. Go back to the **Source** page.
+```
+oka-support-desk/
+├── NOTES_ANALYSIS.md       # Preuve d'extraction des 3 dépôts
+├── README.md               # Ce fichier
+├── METHOD.md               # Méthode de support en 5 étapes
+├── AI_METHOD.md            # Approche IA + HITL
+├── pyproject.toml          # Dépendances Python
+├── Makefile                # Commandes make test / make demo
+├── LICENSE / NOTICE        # Apache 2.0 © 2026 UCit
+├── .github/workflows/ci.yml# CI GitHub Actions (ruff + pytest)
+├── templates/              # 4 templates de ticket
+├── tickets/                # 7 tickets clients (7 × 6 fichiers)
+├── tools/                  # 8 outils IA + HITL
+├── docs/                   # runbook, known_issues, escalation_matrix
+└── tests/                  # 3 tests de contrat et de bon fonctionnement
+```
 
-Before you move on, go ahead and explore the repository. You've already seen the **Source** page, but check out the **Commits**, **Branches**, and **Settings** pages.
+## 4. Ce que cela démontre (tableau mission → preuve)
 
----
+| Mission | Preuve dans le POC |
+|---------|-------------------|
+| Comprendre le contrat `HealthcheckRule` | `tickets/TICKET-001/.../cores_account_quota_rule.py` — params_model Pydantic, evaluate, _no_data_alert, CRITICAL avant HIGH, min_jobs |
+| Comprendre le contrat `DataEnhancer` | `tickets/TICKET-004/.../custom_cost_enhancer.py` — params_model Pydantic, run, préfixe Cust_, noms réservés |
+| Comprendre le payload webhook | `tickets/TICKET-006/.../diagnosis.md` — {subject, body}, Bearer token, routes /health + /notify |
+| Patterns UCit | `tools/rule_generator.py` — frozenset, _FAILED_STATES, _no_data_alert, CRITICAL avant HIGH |
+| Méthode support reproductible | `METHOD.md` — qualifier → diagnostiquer → résoudre → répondre → capitaliser |
+| IA + HITL | `tools/*.py` — chaque outil affiche un avertissement "À valider par l'ingénieur" |
+| Tests de contrat | `tests/test_resolution_contracts.py` — vérifie params_model, _no_data_alert, CRITICAL avant HIGH |
 
-## Clone a repository
+## 5. Comment exécuter
 
-Use these steps to clone from SourceTree, our client for using the repository command-line free. Cloning allows you to work on your files locally. If you don't yet have SourceTree, [download and install first](https://www.sourcetreeapp.com/). If you prefer to clone from the command line, see [Clone a repository](https://confluence.atlassian.com/x/4whODQ).
+```bash
+# Installation
+make install
 
-1. You’ll see the clone button under the **Source** heading. Click that button.
-2. Now click **Check out in SourceTree**. You may need to create a SourceTree account or log in.
-3. When you see the **Clone New** dialog in SourceTree, update the destination path and name if you’d like to and then click **Clone**.
-4. Open the directory you just created to see your repository’s files.
+# Lint
+make lint
 
-Now that you're more familiar with your Bitbucket repository, go ahead and add a new file locally. You can [push your change back to Bitbucket with SourceTree](https://confluence.atlassian.com/x/iqyBMg), or you can [add, commit,](https://confluence.atlassian.com/x/8QhODQ) and [push from the command line](https://confluence.atlassian.com/x/NQ0zDQ).
+# Tests
+make test
+
+# Démo rapide
+make demo
+```
+
+## 6. Limites assumées
+
+- Pas d'instance OKA réelle : les règles sont statiques, non exécutées contre une plateforme
+- Pas de LLM obligatoire : fallback heuristique déterministe documenté (Ollama optionnel)
+- 7 tickets qualitatifs, simulés, pour démontrer la méthode
+
+## 7. Références
+
+- Dépôts sources : `./oka_healthchecks`, `./oka_dataenhancers`, `./oka_webhooks` (racine du workspace)
+- Documentation OKA : https://doc.oka.how
+- Site UCit : https://uca.how
