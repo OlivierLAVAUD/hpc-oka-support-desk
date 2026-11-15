@@ -10,7 +10,11 @@
 | Token Bearer mismatch | Non | Support N2 | < 2h |
 | Bug dans le SDK OKA | Oui | R&D | < 24h |
 | Demande de formation | Non | Support N1 | < 1j |
-| Demande de fonctionnalité produit | Oui | Product | < 1s |
+| Demande de fonctionnalité produit | Oui | Product | < 1j |
+| Portail/visualisation 3D inaccessible | Oui si GPU, ALB ou infra | N2 + Infra/R&D | < 2h |
+| WebSocket noVNC interrompu | Non | Support N2 | < 2h |
+| Certificat TLS ou reverse proxy | Non | N1/N2 | < 1h |
+| Déploiement ou mise à jour CCME | Oui | N2 + R&D | < 1j |
 | Incident de production (cluster down) | Oui | N2 + R&D | Immédiat |
 
 **Niveaux** :

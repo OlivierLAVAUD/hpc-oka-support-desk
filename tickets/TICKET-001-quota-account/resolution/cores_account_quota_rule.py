@@ -1,3 +1,17 @@
+# Copyright 2026 UCit
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
 """
 Rule: Cores account quota threshold (TICKET-001 adaptation)
 Description: Alert when a specific named account's CPU core-hours consumption
@@ -17,12 +31,11 @@ class Params(BaseModel):
         default="fusion-plasma",
         min_length=1,
         description=(
-            "Name of the account to monitor. Must match the scheduler account field exactly. "
-            "Replace the default placeholder with the actual account name."
+            "Name of the account to monitor. Must match the scheduler account field exactly."
         ),
     )
     quota_core_hours: float = Field(
-        default=10000.0,
+        default=10_000.0,
         gt=0.0,
         description="Purchased or allocated quota in core-hours for the monitored account.",
     )
@@ -35,29 +48,26 @@ class Params(BaseModel):
     critical_pct: float = Field(
         default=0.90,
         ge=0.0,
+        le=1.0,
         description="Fraction of quota consumed that triggers a CRITICAL alert (default 90%).",
     )
     grouping_size: int = Field(
         default=50,
         ge=1,
         description=(
-            "Number of top accounts to retrieve from the provider. "
-            "Raise this value if the target account does not appear in results."
+            "Number of top accounts to retrieve from the provider. Raise this value "
+            "if the target account does not appear in results."
         ),
     )
 
 
 class CoresAccountQuotaRule(HealthcheckRule[Params]):
-    """Alert when a specific named account's core-hours consumption reaches a quota threshold.
-
-    TICKET-001 : adaptation du rule cores_account_quota_rule.py avec le compte
-    "fusion-plasma" et seuils 80 % / 90 %.
-    """
+    """Alert when a named account's core-hours consumption approaches its quota."""
 
     params_model = Params
 
     def evaluate(self) -> list[Alert]:
-        """Fetch per-account core-hours data and return quota consumption alerts."""
+        """Fetch grouped core-hours and return an alert if the quota is at risk."""
         result, status = self.cores.get_grouped_distribution(
             grouping_type="Account",
             grouping_size=self.params.grouping_size,
@@ -66,45 +76,21 @@ class CoresAccountQuotaRule(HealthcheckRule[Params]):
         if status != ResultStatus.OK or result is None:
             return [self._no_data_alert(status)]
 
-        if not result.groups:
-            return []
-
-        # Find the target account by matching group.group_name
         target_group = next(
             (group for group in result.groups if group.group_name == self.params.account),
             None,
         )
-
         if target_group is None:
-            return self._account_not_found_alert()
+            return [self._account_not_found_alert()]
 
-        total_core_hours = sum(sum(group.core_hours_sum) for group in result.groups)
+        consumed = sum(target_group.core_hours_sum)
+        ratio = consumed / self.params.quota_core_hours
 
-        # If total is 0, no jobs have run - not a problem worth alerting on
-        if total_core_hours <= 0:
+        alert_result = self._resolve_alert_level(ratio)
+        if alert_result is None:
             return []
 
-        # Compute the account's share
-        consumed = sum(group.core_hours_sum for group in result.groups if group.group_name == self.params.account)
-        ratio = consumed / total_core_hours
-
-        # TICKET-001 : alerte OK explicite si l'échantillon est trop petit
-        if total_core_hours < self.params.min_jobs:
-            return [
-                self._no_data_alert(
-                    status=None,
-                    extra_reason=(
-                        f"Only {total_core_hours:.0f} core-hours of data available "
-                        f"(min_jobs={self.params.min_jobs}). Rule stays silent — sample too small."
-                    ),
-                ]
-            ]
-
-        result_alert = self._resolve_alert_level(ratio)
-        if result_alert is None:
-            return []
-
-        level, threshold_pct = result_alert
+        level, threshold_pct = alert_result
         return [self._build_alert(consumed, ratio, level, threshold_pct)]
 
     def _no_data_alert(self, status: ResultStatus) -> Alert:
@@ -114,10 +100,10 @@ class CoresAccountQuotaRule(HealthcheckRule[Params]):
             title="No data - core-hours quota",
             description=(
                 f"The data provider returned status '{status.value}'; "
-                "no data was available to evaluate."
+                "no data was available to evaluate the quota consumption."
             ),
             reason=f"Provider returned {status.value}.",
-            metadata={"status": status.value},
+            metadata={"status": status.value, "account": self.params.account},
         )
 
     def _account_not_found_alert(self) -> Alert:
@@ -128,10 +114,9 @@ class CoresAccountQuotaRule(HealthcheckRule[Params]):
             description=(
                 f"Account '{self.params.account}' did not appear in the top "
                 f"{self.params.grouping_size} accounts returned by the provider. "
-                "This typically means the account has no recorded jobs in the current "
-                "time window, or its consumption falls below the top-"
-                f"{self.params.grouping_size} cutoff. Consider raising 'grouping_size' "
-                "if the account is known to be active."
+                "It may have no recorded jobs in the current window, or fall below "
+                "the top-N cutoff. Consider raising 'grouping_size' if the account "
+                "is known to be active."
             ),
             reason=(
                 f"Account '{self.params.account}' was absent from the top-"
@@ -144,17 +129,16 @@ class CoresAccountQuotaRule(HealthcheckRule[Params]):
         )
 
     def _resolve_alert_level(self, ratio: float) -> tuple[AlertLevel, float] | None:
-        """Map a quota-consumption fraction to an AlertLevel and threshold.
-
-        CRITICAL checked first to avoid misclassification.
-        """
+        """Map a quota-consumption fraction to an AlertLevel and threshold."""
         if ratio >= self.params.critical_pct:
             return AlertLevel.CRITICAL, self.params.critical_pct
         if ratio >= self.params.warn_pct:
             return AlertLevel.HIGH, self.params.warn_pct
         return None
 
-    def _build_alert(self, consumed: float, ratio: float, level: AlertLevel, threshold_pct: float) -> Alert:
+    def _build_alert(
+        self, consumed: float, ratio: float, level: AlertLevel, threshold_pct: float
+    ) -> Alert:
         """Build a quota-threshold alert for the monitored account."""
         return Alert(
             level=level,

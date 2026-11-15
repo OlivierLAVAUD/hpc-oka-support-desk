@@ -6,7 +6,7 @@ conçu pour respecter les contrats et patterns extraits ci-dessous.
 
 ---
 
-## 1. Dépôt `./oka_healthchecks` (40 règles HealthCheck, 9 domaines)
+## 1. Dépôt `./oka_healthchecks` (68 règles HealthCheck, 9 domaines)
 
 ### Fichiers lus (extract complet)
 
@@ -48,7 +48,7 @@ conçu pour respecter les contrats et patterns extraits ci-dessous.
 
 ---
 
-## 2. Dépôt `./oka_dataenhancers` (7 Data Enhancers, 5 catégories)
+## 2. Dépôt `./oka_dataenhancers` (8 Data Enhancers, 5 catégories)
 
 ### Fichiers lus (extract complet)
 
@@ -123,5 +123,3 @@ Le POC `oka-support-desk` respecte scrupuleusement :
 - Le contrat `DataEnhancer` (params_model Pydantic, run, préfixe Cust_, noms réservés)
 - Le contrat webhook OKA (payload {subject, body}, auth Bearer, routes /notify)
 - La licence Apache 2.0 © 2026 UCit
-
-NOTES_ANALYSIS.md créé.

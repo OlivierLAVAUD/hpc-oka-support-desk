@@ -1,0 +1,45 @@
+# Copyright 2026 UCit
+#
+# Exemple de configuration de portail de visualisation.
+# Les secrets ne doivent pas être stockés dans ce fichier : utiliser un
+# coffre-fort ou des variables d'environnement injectées au déploiement.
+
+portal:
+  public_url: "https://viz.example.org"
+  branding:
+    title: "Visualisation scientifique — Institut des Géosciences"
+    logo: "/assets/logo-institut.svg"
+    primary_color: "#0f766e"
+    welcome_message: "Choisissez une application 2D ou 3D pour démarrer."
+  access:
+    allowed_cidrs:
+      - "192.0.2.0/24"
+      - "198.51.100.0/24"
+    allowed_groups:
+      - "lab-geosciences"
+      - "support-ucit"
+    sso:
+      provider: "oidc"
+      logout_redirect: "/"
+  session:
+    max_duration_minutes: 240
+    idle_timeout_minutes: 30
+    max_sessions_per_user: 2
+  visualization:
+    protocol: "novnc"
+    vnc_port: 6080
+    depth: 24
+    virtualgl: true
+    gpu_pool: "gpu-viz"
+    applications:
+      - name: "ParaView"
+        command: "vglrun /usr/bin/paraview"
+        mode: "3d"
+      - name: "Bureau 2D"
+        command: "startxfce4"
+        mode: "2d"
+  integrations:
+    ccme:
+      enabled: true
+      sso: "oidc"
+      group_mapping: "ccme-groups"

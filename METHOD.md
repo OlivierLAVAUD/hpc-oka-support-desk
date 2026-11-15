@@ -41,6 +41,7 @@ et évaluer la sévérité.
    - `_FAILED_STATES` (frozenset des états d'échec)
    - `BRIDGE_BEARER_TOKEN` aligné entre OKA et le bridge
    - Colonne `ENERGY` présente avant l'enhancer CO2
+   - Portail/visualisation : TLS, WebSocket, TurboVNC, VirtualGL/GPU, SSO
 4. Créer le fichier `diagnosis.md` avec cause racine et preuves
 
 **Livrables** : `tickets/TICKET-XXX/diagnosis.md`
@@ -57,16 +58,18 @@ et évaluer la sévérité.
 **Objectif** : Produire une résolution technique conforme aux contrats OKA.
 
 **Actions** :
-1. Utiliser `tools/rule_generator.py` pour générer une règle HealthCheck ou un
-   enhancer DataEnhancer si nécessaire
+1. Utiliser `tools/rule_generator.py` pour générer une règle HealthCheck ; pour
+   un enhancer, s'inspirer de `oka_dataenhancers/costs/costs_demo.py`
 2. Vérifier les 5 patterns obligatoires (checklist affichée par l'outil) :
    - `params_model` Pydantic avec valeurs par défaut
    - `evaluate()` / `run()` conforme
    - `_no_data_alert` quand provider échoue
    - CRITICAL vérifié avant HIGH
    - `min_jobs` guard si applicable
-3. Écrire le fichier de résolution dans `tickets/TICKET-XXX/resolution/`
-4. Tester le contrat avec `tests/test_resolution_contracts.py`
+3. Pour un portail ou une visualisation, appliquer le runbook
+   `TICKET-008/resolution/remote_viz_portal_runbook.md` (Linux/Windows/AWS)
+4. Écrire le fichier de résolution dans `tickets/TICKET-XXX/resolution/`
+5. Tester le contrat avec `tests/test_resolution_contracts.py`
 
 **Livrables** : `tickets/TICKET-XXX/resolution/*.py`
 
@@ -111,5 +114,3 @@ et évaluer la sévérité.
 **Garde-fous** :
 - Chaque évolution proposée à la R&D est validée par l'ingénieur avant envoi
 - La capitalisation alimente la formation future (TICKET-007)
-
-METHOD.md créé.

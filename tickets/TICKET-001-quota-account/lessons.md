@@ -3,7 +3,7 @@
 ## Leçon tirée
 La règle de quota existe déjà dans le dépôt oka_healthchecks ; le rôle du support
 est de l'adapter aux paramètres du client (nom du compte, quota, seuils) plutôt
-que de développer une règle neuf. Il faut systématiquement remplacer le default
+que de développer une règle neuve. Il faut systématiquement remplacer le default
 placeholder "project_x" par le nom de compte réel.
 
 ## Recommandation pour le client

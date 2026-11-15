@@ -41,6 +41,30 @@ et prévention.
 
 ---
 
+## KI-005 — Rendu 3D en llvmpipe
+
+| Champ | Valeur |
+|-------|--------|
+| **Symptôme** | Session 3D noire ou bloquée, alors que la 2D fonctionne |
+| **Cause** | Le lanceur de session n'utilise pas `vglrun` ; OpenGL bascule sur `llvmpipe` |
+| **Solution** | Lancer les applications 3D avec `vglrun` et valider `vglrun glxinfo -B` |
+| **Prévention** | Contrôle de pré-flight `check_remote_viz.sh` et alerte si renderer logiciel |
+| **Ticket** | TICKET-008 |
+
+---
+
+## KI-006 — WebSocket noVNC coupé par l'ALB
+
+| Champ | Valeur |
+|-------|--------|
+| **Symptôme** | Déconnexion après environ une minute, code WebSocket 1006 |
+| **Cause** | Timeout ALB à 60 s et en-têtes `Upgrade`/`Connection` absents de Nginx |
+| **Solution** | Timeout ALB ≥ 300 s et configuration WebSocket Nginx |
+| **Prévention** | Test de session inactive et revue de configuration ALB/Nginx |
+| **Ticket** | TICKET-008 |
+
+---
+
 ## KI-004 — Seuils par défaut non adaptés
 
 | Champ | Valeur |

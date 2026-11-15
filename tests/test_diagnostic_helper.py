@@ -1,10 +1,22 @@
+# Copyright 2026 UCit
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
 """Tests pour diagnostic_helper.py — vérifie le retour d'une checklist non vide."""
 
 import subprocess
 import sys
 from pathlib import Path
-
-import pytest
 
 TOOL = Path(__file__).resolve().parents[1] / "tools" / "diagnostic_helper.py"
 
@@ -16,9 +28,18 @@ VALID_FAMILIES = [
     "missing-data",
     "notification",
     "training",
+    "remote-visualization",
+    "ccme",
 ]
 
-VALID_COMPONENTS = ["HealthCheck", "DataEnhancer", "Webhook Bridge", "Formation"]
+VALID_COMPONENTS = [
+    "HealthCheck",
+    "DataEnhancer",
+    "Webhook Bridge",
+    "Formation",
+    "Portail & Visualisation",
+    "CCME",
+]
 
 
 def _run_helper(family: str, component: str) -> str:

@@ -20,6 +20,7 @@ avec les commandes et fichiers de référence.
 
 ### Commandes
 ```bash
+uv run python tools/diagnostic_helper.py --family configuration --component resources
 make test          # Vérifier les contrats
 make lint          # Vérifier la qualité du code
 ```
@@ -55,6 +56,11 @@ uv run python tools/diagnostic_helper.py --family rule-not-firing --component jo
 4. Vérifier CRITICAL avant HIGH dans `_resolve_alert_level`
 5. Tester sur une période représentative avant activation
 
+### Commandes
+```bash
+uv run python tools/diagnostic_helper.py --family false-positives --component kpi
+```
+
 ---
 
 ## Famille : custom-enhancer (ex: TICKET-004)
@@ -69,6 +75,11 @@ uv run python tools/diagnostic_helper.py --family rule-not-firing --component jo
 5. Utiliser `re.compile()` + `str.match()` pour les patterns de compte
 6. Tester sur un DataFrame d'exemple
 
+### Commandes
+```bash
+uv run python tools/diagnostic_helper.py --family custom-enhancer --component costs
+```
+
 ---
 
 ## Famille : missing-data (ex: TICKET-005)
@@ -81,6 +92,11 @@ uv run python tools/diagnostic_helper.py --family rule-not-firing --component jo
 3. Vérifier l'ordre d'exécution des enhancers
 4. Installer les dépendances externes si besoin (pymysql, requests, entsoe-py)
 5. Documenter l'ordre d'exécution dans le runbook client
+
+### Commandes
+```bash
+uv run python tools/diagnostic_helper.py --family missing-data --component CO2
+```
 
 ---
 
@@ -105,6 +121,54 @@ journalctl -u oka-slack-bridge -f
 
 ---
 
+## Famille : remote-visualization (ex: TICKET-008)
+
+**Objectif** : Rétablir un portail de visualisation distante 2D/3D (Linux/Windows).
+
+### Étapes
+1. Vérifier DNS, TLS, health check ALB et accès au port 443
+2. Vérifier le service TurboVNC et le port noVNC en local
+3. Exécuter `vglrun glxinfo -B` : le renderer doit être la GPU, pas `llvmpipe`
+4. Vérifier les en-têtes WebSocket Nginx (`Upgrade`, `Connection`)
+5. Aligner le timeout ALB (≥ 300 s) avec les timeouts Nginx
+6. Tester une session 3D depuis Linux et Windows, puis une session inactive
+7. Vérifier branding, groupes SSO et plages IP autorisées
+
+### Commandes
+```bash
+uv run python tools/diagnostic_helper.py --family remote-visualization \
+  --component "Portail & Visualisation"
+bash tickets/TICKET-008-visualization-portal/resolution/check_remote_viz.sh
+```
+
+Côté Windows :
+```powershell
+.\tickets\TICKET-008-visualization-portal\resolution\Test-RemoteViz.ps1
+```
+
+---
+
+## Famille : ccme (ex: déploiement ou mise à jour CCME)
+
+**Objectif** : Déployer, mettre à jour ou diagnostiquer CCME avec OKA.
+
+### Étapes
+1. Vérifier la version CCME, la matrice de compatibilité OKA et la licence
+2. Contrôler les prérequis Linux/Windows, comptes de service et permissions
+3. Vérifier SSO/LDAP/OIDC, TLS et reverse proxy
+4. Sauvegarder la base et préparer le rollback avant toute migration
+5. Valider les tests de fumée et la connectivité OKA/CCME
+6. Consigner les preuves et remonter les irritants à la R&D
+
+### Commande
+```bash
+uv run python tools/diagnostic_helper.py --family ccme --component CCME
+```
+
+Voir `docs/ccme_deployment_checklist.md`.
+
+---
+
 ## Famille : training (ex: TICKET-007)
 
 **Objectif** : Construire un parcours de formation.
@@ -115,4 +179,9 @@ journalctl -u oka-slack-bridge -f
 3. Construire un parcours en 3 modules progressifs
 4. S'appuyer sur les 3 dépôts sources pour le contenu
 5. Planifier des sessions en petits groupes avec ateliers pratiques
+
+### Commandes
+```bash
+uv run python tools/training_generator.py --users 150 --level "débutant à intermédiaire"
+```
 

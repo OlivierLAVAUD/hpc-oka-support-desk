@@ -12,8 +12,8 @@ les besoins des chercheurs et doctorants.
 - [x] Contenu disponible dans les 3 dépôts (oka_healthchecks, oka_dataenhancers, oka_webhooks)
 
 ## Preuves observées
-- oka_healthchecks : 40 règles pour construire le module 3 (alertes)
-- oka_dataenhancers : 7 enhancers pour le module 2 (rapports, chargeback)
+- oka_healthchecks : 68 règles pour construire le module 3 (alertes)
+- oka_dataenhancers : 8 enhancers pour le module 2 (rapports, chargeback)
 - oka_webhooks : 4 bridges pour le module 3 (notifications)
 
 ## Impact client

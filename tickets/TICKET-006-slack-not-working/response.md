@@ -40,3 +40,8 @@ Notre équipe support reste à votre disposition pour toute question complément
 
 Cordialement,
 L'équipe support UCit
+
+---
+
+Validé par l'ingénieur : Support N2 | Date : 2026-10-16
+Bandeau BROUILLON supprimé : oui
