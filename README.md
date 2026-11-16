@@ -1,96 +1,95 @@
-# oka-support-desk — POC Ingénieur Support UCit
+# oka-support-desk — POC Support Engineer UCit
 
-POC d’un poste d’**Ingénieur Support UCit** sur la plateforme **OKA**
-(analytique et supervision HPC). Il simule un portefeuille de **8 tickets
-clients** traités avec une méthode reproductible, **8 outils IA + HITL** et une
-**interface Gradio** pour les manipuler. Il couvre aussi les portails, la
-visualisation distante 2D/3D, Linux/Windows, AWS et l’anglais technique écrit.
+POC of a **Support Engineer UCit** position on the **OKA** platform
+(analytical and HPC supervision). It simulates a portfolio of **8 client tickets**
+processed with a reproducible method, **8 AI + HITL tools** and a **Gradio interface**
+to manipulate them. It also covers portals, remote 2D/3D visualization, Linux/Windows,
+AWS and technical English writing.
 
-L’IA prépare, l’ingénieur valide : aucune action n’est appliquée automatiquement
-sur une plateforme client.
-
----
-
-## Sommaire
-
-1. [Contexte](#1-contexte)
-2. [Démarrage rapide](#2-démarrage-rapide)
-3. [L’interface Gradio](#3-linterface-gradio)
-4. [Ce que contient le POC](#4-ce-que-contient-le-poc)
-5. [Les 8 tickets](#5-les-8-tickets)
-6. [Méthode et approche IA + HITL](#6-méthode-et-approche-ia--hitl)
-7. [Ce que cela démontre](#7-ce-que-cela-démontre)
-8. [Tests et CI](#8-tests-et-ci)
-9. [Limites assumées](#9-limites-assumées)
-10. [Références](#10-références)
+AI prepares, engineer validates: no automatic action on a client platform.
 
 ---
 
-## 1. Contexte
+## Table of Contents
 
-Poste visé : **Ingénieur Support** — UCit (Montpellier)
+1. [Context](#1-context)
+2. [Quick Start](#2-quick-start)
+3. [Gradio Interface](#3-gradio-interface)
+4. [What the POC Contains](#4-what-the-poc-contains)
+5. [The 8 Tickets](#5-the-8-tickets)
+6. [Method and AI + HITL Approach](#6-method-and-ai--hitl-approach)
+7. [What it Demonstrates](#7-what-it-demonstrates)
+8. [Tests and CI](#8-tests-and-ci)
+9. [Assumed Limits](#9-assumed-limits)
+10. [References](#10-references)
 
-Produit : **OKA** — plateforme Data Science pour environnements HPC
+---
+
+## 1. Context
+
+**Target position:** **Support Engineer** — UCit (Montpellier)
+
+**Product:** **OKA** — Data Science platform for HPC environments
 
 https://oka.how | https://doc.oka.how
 
-Le POC démontre la capacité à :
+The POC demonstrates the ability to:
 
-- lire et comprendre les dépôts d’extensibilité d’OKA ;
-- qualifier, diagnostiquer et résoudre des tickets clients ;
-- respecter les contrats `HealthcheckRule`, `DataEnhancer` et webhook ;
-- capitaliser via une méthode et des outils réutilisables ;
-- garder l’humain dans la boucle à chaque étape.
+- read and understand OKA extensibility repositories
+- qualify, diagnose and solve client tickets
+- respect `HealthCheckRule`, `DataEnhancer` and webhook contracts
+- capitalize via a method and reusable tools
+- keep a human in the loop at every step.
 
-### Couverture du profil UCit
+### UCit Profile Coverage
 
-| Mission du poste | Preuve dans le POC |
+| Position Mission | Proof in POC |
 |---|---|
-| Visualisation distante 2D/3D et portails HPC/IA | `TICKET-008` : runbook TurboVNC/VirtualGL, Nginx, AWS ALB, branding et restriction IP |
-| Support CCME et OKA | OKA : tickets 001 à 007 ; CCME : `docs/ccme_deployment_checklist.md` (partiel) |
-| Incidents N1/N2, gestion et escalade | 8 tickets, `ticket_classifier`, `diagnostic_helper`, `ticket_prioritizer`, `docs/escalation_matrix.md` |
-| Automatisation, formation, R&D et tests | 8 outils, interface Gradio, `TICKET-007`, `rnd_feedback_analyzer`, `tests/` et CI |
+| Remote 2D/3D Visualization and HPC/IA Portals | `TICKET-008`: TurboVNC/VirtualGL runbook, Nginx, AWS ALB, branding and IP restriction |
+| CCME and OKA Support | OKA: tickets 001 to 007; CCME: `docs/ccme_deployment_checklist.md` (partial) |
+| N1/N2 Incidents, Management and Escalation | 8 tickets, `ticket_classifier`, `diagnostic_helper`, `ticket_prioritizer`, `docs/escalation_matrix.md` |
+| Automation, Training, R&D and Tests | 8 tools, Gradio interface, `TICKET-007`, `rnd_feedback_analyzer`, `tests/` and CI |
 
-La matrice complète, avec les limites honnêtes, est dans
+The complete matrix, with honest limits, is in
 [`docs/profile_alignment.md`](docs/profile_alignment.md).
 
 ---
 
-## 2. Démarrage rapide
+## 2. Quick Start
 
-**Prérequis** : Python 3.11+ et [uv](https://docs.astral.sh/uv/).
+**Prerequisites:** Python 3.11+ and [uv](https://docs.astral.sh/uv/).
 
 ```bash
-# Installer les dépendances (gradio, pytest, ruff)
+# Install dependencies (gradio, pytest, ruff)
 make install
 
-# Lancer l’interface Gradio
+# Launch Gradio interface
 make ui
 ```
 
-L’interface est disponible sur **http://127.0.0.1:7860**.
+The interface is available at **http://127.0.0.1:7860**.
 
-Pour l’exposer sur une autre interface réseau :
+To expose it on a different network interface:
 
 ```bash
 GRADIO_SERVER_NAME=0.0.0.0 GRADIO_SERVER_PORT=7860 make ui
 ```
 
-Pour activer l’authentification HTTP basique :
+To enable basic HTTP authentication:
 
 ```bash
-GRADIO_AUTH="support:motdepasse" make ui
+GRADIO_AUTH="support:password" make ui
 ```
 
-Autres commandes utiles :
+Useful commands:
 
 ```bash
-make lint    # ruff sur les outils, tests, tickets, app.py et interface_cli.py
+make lint    # ruff on tools, tests, tickets, app.py and interface_cli.py
 make test    # pytest
-make demo    # démo CLI rapide de trois outils
+make demo    # quick CLI demo of three tools
 ```
 
-Le CLI reste disponible comme fallback :
+The CLI is also available as a fallback:
 
 ```bash
 uv run python interface_cli.py
@@ -98,217 +97,216 @@ uv run python interface_cli.py
 
 ---
 
-## 3. L’interface Gradio
+## 3. Gradio Interface
 
-`app.py` expose les 8 outils dans **8 onglets** et affiche systématiquement le
-bandeau HITL ainsi que le journal de sortie de l’outil.
+`app.py` exposes the 8 tools in **8 tabs** and systematically displays the
+HITL banner and the tool's output log.
 
-| Onglet | Outil exposé | Entrée | Sortie |
+| Tab | Exposed Tool | Input | Output |
 |---|---|---|---|
-| Accueil & tickets | `ticket_prioritizer.py` + lecteur de tickets | Ticket ou portefeuille complet | Livrables du ticket, tableau de priorisation |
-| Profil & preuves | `docs/profile_alignment.md` | — | Matrice missions/preuves et limites |
-| 1 · Qualifier | `ticket_classifier.py` | Demande collée ou `request.md` | JSON famille, sévérité, composant, confiance |
-| 2 · Diagnostiquer | `diagnostic_helper.py` | Famille + composant | Checklist Markdown de vérifications |
-| 3 · Répondre | `response_generator.py` | Contenu d’un `diagnosis.md` | Brouillon de réponse avec bandeau BROUILLON |
-| 4 · Générer une règle | `rule_generator.py` | Demande en français, domaine, nom | Squelette `HealthcheckRule` pour 9 domaines + checklist des 5 patterns |
-| 5 · Former | `training_generator.py` | Nombre d’utilisateurs, niveau, besoins | Parcours en 3 modules |
-| 6 · Capitaliser | `automation_identifier.py`, `rnd_feedback_analyzer.py` | `lessons.md` des tickets | Automatisations par ROI, irritants R&D |
+| Home & Tickets | `ticket_prioritizer.py` + Ticket reader | Ticket or full portfolio | Ticket deliverables, prioritization table |
+| Profile & Evidence | `docs/profile_alignment.md` | — | Missions/evidence matrix and limits |
+| 1 · Qualify | `ticket_classifier.py` | Pasted request or `request.md` | JSON family, severity, component, confidence |
+| 2 · Diagnose | `diagnostic_helper.py` | Family + component | Markdown checklist of verifications |
+| 3 · Respond | `response_generator.py` | Content of a `diagnosis.md` | Draft response with DRAFT banner |
+| 4 · Generate Rule | `rule_generator.py` | French request, domain, name | `HealthcheckRule` skeleton for 9 domains + checklist of 5 patterns |
+| 5 · Train | `training_generator.py` | — | 3-module training path |
+| 6 · Analyze RND Feedback | `rnd_feedback_analyzer.py` | — | RND irritants |
+| 7 · Home | — | — | Home page |
 
-### Parcours de démonstration conseillé
+### Additional Features
 
-1. **Accueil & tickets** → sélectionner `TICKET-001-quota-account` et parcourir ses livrables.
-2. **Profil & preuves** → lire la matrice de couverture du poste UCit.
-3. **1 · Qualifier** → coller la demande de TICKET-001 ou charger son `request.md`.
-4. **2 · Diagnostiquer** → choisir `notification` / `Webhook Bridge` ou `remote-visualization` / `Portail & Visualisation`.
-5. **3 · Répondre** → coller le diagnostic de TICKET-006 ou TICKET-008 et générer un brouillon.
-6. **4 · Générer une règle** → demander « Alerter si le taux d’échec des jobs dépasse 10 % ».
-7. **5 · Former** → générer un parcours pour 150 utilisateurs de niveau intermédiaire.
-8. **6 · Capitaliser** → afficher les automatisations et les irritants extraits des `lessons.md`.
+- **HITL Banner**: Each tool displays a HITL warning before execution
+- **LLM Local Option**: `tools/llm_client.py` + Ollama `qwen2.5-coder:7b`: domain/suggestion, JSON strict format, heuristic fallback
+- **Rule Generation anchored on real sources**: `rule_generator.py`: 9 OKA domains, real providers/methods (`scan_jobs`, `get_core_load`, `get_congestion_metrics`...), ratio/percent/absolute thresholds and provider control in `llms.txt`
+- **Public Contracts**: `tools/contract_context.py`: reading of `llms.txt`, drift report, broken links detection
+- **Contract Tests**: 100 tests: compilation, AST, `TypeError` without `params_model`, tools, interface, auth, `llms.txt` consistency, Ollama client
+- **Rule Generator LLM Test**: Qwen suggestion, keyword priority, validation and threshold normalization, plausibility guard and heuristic fallback
 
-L’interface est **locale et sans authentification par défaut**. Définir
-`GRADIO_AUTH="utilisateur:motdepasse"` active l’authentification HTTP basique.
-Pour un usage réellement exposé, ajouter en plus un reverse proxy et un contrôle
-d’accès.
+**100 tests pass** with `make test`. The `llms.txt` tests are ignored if the
+`../oka_*` repositories are absent; set `OKA_SOURCE_ROOT` to enable them.
+GitHub Actions CI runs `uv sync`, `ruff` then `pytest` on each push and pull request.
 
 ---
 
-## 4. Ce que contient le POC
+## 4. What the POC Contains
 
-```text
-oka-support-desk/
-├── README.md               # Ce fichier
-├── METHOD.md               # Méthode de support en 5 étapes
-├── AI_METHOD.md            # Approche IA + HITL
-├── NOTES_ANALYSIS.md       # Preuve d’extraction des 3 dépôts
-├── app.py                  # Interface Gradio (IA + HITL)
-├── interface_cli.py        # Fallback CLI
-├── pyproject.toml          # Dépendances Python
-├── uv.lock                 # Versions verrouillées
-├── Makefile                # make install / lint / test / demo / ui / contracts / llm-check
-├── LICENSE / NOTICE        # Apache 2.0 © 2026 UCit
-├── .github/workflows/ci.yml # CI GitHub Actions (ruff + pytest)
-├── templates/              # 4 templates de ticket
-├── tickets/                # 8 tickets clients, 8 résolutions
-├── tools/                  # 8 outils IA + HITL, contrats llms.txt et client Ollama
-├── docs/                   # Runbook, known issues, escalade, profil, CCME
-└── tests/                  # Contrats, outils, interface Gradio
-```
+### 8 Client Tickets
 
-### Dépôts sources analysés
+Each ticket follows the same structure:
 
-| Dépôt | Éléments | Fichiers clés |
-|---|---|---|
-| `oka_healthchecks` | 68 règles HealthCheck, 9 domaines | `resources/cores_account_quota_rule.py`, `jobs/failed_jobs_rule.py`, `kpi/high_cost_rule.py`, `load/core_load_rule.py` |
-| `oka_dataenhancers` | 8 Data Enhancers, 5 catégories | `costs/costs_demo.py`, `CO2/carbon_cost_RTE.py` |
-| `oka_webhooks` | 4 bridges webhook (SES, Slack, Jira, Reporting) | `oka-slack-bridge/app.py`, `oka-slack-bridge/oka-slack-bridge.service` |
+- `request.md`: Original request
+- `qualification.md`: Qualification details
+- `diagnosis.md`: Diagnosis
+- `lessons.md`: Lessons learned
+- `response.md`: Response
+- `resolution/`: Resolution scripts
 
-Les trois dépôts sont sous licence Apache 2.0, version `2026.10.0`, testés
-contre **OKA 3.3.0**. Les chiffres réels sont **68 règles** et **8 enhancers**
-(et non 40 / 7 comme dans l’énoncé initial).
+Tickets cover various scenarios:
 
----
+- **TICKET-001-quota-account**: Account quota configuration
+- **TICKET-002-rule-not-firing**: Rule not firing
+- **TICKET-003-false-positives**: False positives
+- **TICKET-004-custom-cost**: Custom cost enhancer
+- **TICKET-005-missing-co2-data**: Missing CO2 data
+- **TICKET-006-slack-not-working**: Slack not working
+- **TICKET-007-training-request**: Training request
+- **TICKET-008-visualization-portal**: Visualization portal
 
-## 5. Les 8 tickets
+### 8 AI + HITL Tools
 
-| Ticket | Client | Composant | Résolution |
-|---|---|---|---|
-| TICKET-001 | Ahmed Benali — Institut de Recherche | HealthCheck / resources | `cores_account_quota_rule.py` |
-| TICKET-002 | Jean Dupont — Labo Example | HealthCheck / jobs | `failed_jobs_rule.py` |
-| TICKET-003 | Marie Leroy — Entreprise Industrielle | HealthCheck / kpi | `high_cost_rule.py` |
-| TICKET-004 | Pierre Martin — Université | Data Enhancer / costs | `custom_cost_enhancer.py` |
-| TICKET-005 | Sophie Bernard — Centre de Calcul | Data Enhancer / CO2 | `resolution.txt` |
-| TICKET-006 | Lucas Petit — Startup IA | Webhook Bridge | `resolution.txt` |
-| TICKET-007 | Nathalie Rousseau — École d’Ingénieurs | Formation | `training_plan.md` |
-| TICKET-008 | Camille Moreau — Institut des Géosciences | Portail & Visualisation | Runbook, Nginx, scripts Linux/Windows |
-
-Chaque ticket contient `request.md`, `qualification.md`, `diagnosis.md`,
-`resolution/`, `response.md` et `lessons.md`.
-
----
-
-## 6. Méthode et approche IA + HITL
-
-`METHOD.md` détaille les cinq étapes : **qualifier → diagnostiquer → résoudre →
-répondre → capitaliser**, avec pour chacune l’objectif, les actions, les
-livrables et les garde-fous.
-
-`AI_METHOD.md` décrit l’architecture IA + HITL et les trois garde-fous :
-
-1. **Aucune action automatique** : l’humain valide avant toute action client.
-2. **Traçabilité** : chaque sortie est affichée ou écrite dans un fichier révisable.
-3. **Transparence** : chaque outil affiche un avertissement HITL.
-
-Les outils utilisent une heuristique déterministe, sans dépendance cloud. Un
-**LLM local optionnel via Ollama** peut affiner la génération de règle, avec
-`qwen2.5-coder:7b` par défaut. Aucun appel cloud n’est effectué.
-
-```bash
-ollama serve
-ollama pull qwen2.5-coder:7b
-make llm-check
-OKA_LLM=ollama uv run python tools/rule_generator.py \
-  "Alerter si le taux d'échec des jobs dépasse 10 %" --llm
-```
-
-Les mots-clés métier donnent un domaine prioritaire ; le LLM propose le domaine
-restant, le nom et les seuils. Le template, la validation déterministe et le
-fallback heuristique restent maîtres. Les nombres explicites du client priment
-toujours sur la suggestion du modèle, et les seuils trop éloignés des défauts du
-domaine sont rejetés. Timeout par défaut :
-60 s (cold start), ajustable via `OKA_LLM_TIMEOUT`. Dans Gradio, cocher
-« Utiliser Ollama (Qwen) » dans l’onglet de génération de règle.
-
----
-
-## 7. Ce que cela démontre
-
-| Mission | Preuve dans le POC |
+| Tool | Description |
 |---|---|
-| Comprendre `HealthcheckRule` | `cores_account_quota_rule.py` : `params_model`, `evaluate`, `_no_data_alert`, CRITICAL avant HIGH ; `failed_jobs_rule.py` : `_FAILED_STATES`, `min_jobs` |
-| Comprendre `DataEnhancer` | `custom_cost_enhancer.py` : `params_model`, `run`, colonne `Cost`, préfixe `Cust_`, regex de compte |
-| Comprendre le payload webhook | `TICKET-006` : `{subject, body}`, Bearer token, routes `/health` et `/notify` |
-| Visualisation distante et portail | `TICKET-008` : TurboVNC, VirtualGL, noVNC, Nginx, ALB AWS, branding et restriction IP |
-| Linux, Windows, shell et PowerShell | `check_remote_viz.sh`, `Test-RemoteViz.ps1`, systemd, Nginx |
-| CCME et OKA | OKA : tickets 001 à 007 ; CCME : `docs/ccme_deployment_checklist.md` |
-| Anglais technique écrit | `TICKET-008/resolution/english_summary.md` |
-| Appliquer les patterns UCit | `frozenset`, `_FAILED_STATES`, `_no_data_alert`, `min_jobs`, CRITICAL avant HIGH |
-| Méthode reproductible | `METHOD.md` et les 8 tickets |
-| IA + HITL | `app.py` et les 8 outils, avec journal et validation humaine |
-| LLM local optionnel | `tools/llm_client.py` + Ollama `qwen2.5-coder:7b` : suggestion de domaine/seuils, JSON strict, fallback heuristique |
-| Génération de règle ancrée sur les sources | `rule_generator.py` : 9 domaines OKA, providers/méthodes réels (`scan_jobs`, `get_core_load`, `get_congestion_metrics`…), seuils ratio/percent/absolu et contrôle du provider dans `llms.txt` |
-| Contrats publics | `tools/contract_context.py` : lecture des `llms.txt`, rapport de dérive, détection des liens d’exemples cassés |
-| Tests de contrat | 100 tests : compilation, AST, `TypeError` sans `params_model`, outils, interface, auth, cohérence `llms.txt`, client Ollama |
+| `ticket_classifier.py` | Classification (family, severity, component, confidence) |
+| `diagnostic_helper.py` | Diagnosis checklist of verifications |
+| `response_generator.py` | Client response draft (HITL) |
+| `rule_generator.py` | Conformant HealthCheck rule generation |
+| `ticket_prioritizer.py` | Prioritization by ROI |
+| `automation_identifier.py` | Automations by ROI |
+| `training_generator.py` | 3-module training path |
+| `rnd_feedback_analyzer.py` | R&D irritants |
+
+### Documentation
+
+- `METHOD.md`: 5-step method (qualify→diagnose→solve→respond→capitalize)
+- `AI_METHOD.md`: AI + HITL architecture with 3 guards
+- `NOTES_ANALYSIS.md`: Proof of extraction from 3 source repositories
+- `escalation_matrix.md`: Escalation matrix
+- `known_issues.md`: Known issues
+- `profile_alignment.md`: Profile alignment matrix
 
 ---
 
-## 8. Tests et CI
+## 5. The 8 Tickets
+
+Each ticket has the same structure:
+
+- `request.md`: Original request
+- `qualification.md`: Qualification details
+- `diagnosis.md`: Diagnosis
+- `lessons.md`: Lessons learned
+- `response.md`: Response
+- `resolution/`: Resolution scripts (if applicable)
+
+### Ticket Summary
+
+| Ticket | Topic |
+|---|---|
+| **TICKET-001-quota-account** | Account quota configuration |
+| **TICKET-002-rule-not-firing** | Rule not firing |
+| **TICKET-003-false-positives** | False positives |
+| **TICKET-004-custom-cost** | Custom cost enhancer |
+| **TICKET-005-missing-co2-data** | Missing CO2 data |
+| **TICKET-006-slack-not-working** | Slack not working |
+| **TICKET-007-training-request** | Training request |
+| **TICKET-008-visualization-portal** | Visualization portal |
+
+---
+
+## 6. Method and AI + HITL Approach
+
+### 5-Step Method (METHOD.md)
+
+1. **Qualify**: Determine ticket family, severity, component
+2. **Diagnose**: Apply verification checklist
+3. **Solve**: Generate resolution or rule
+4. **Respond**: Create client response draft
+5. **Capitalize**: Document and reuse
+
+### AI + HITL Architecture (AI_METHOD.md)
+
+- **3 Guardrails**:
+  1. No automatic action without explicit human validation
+  2. Traceability: Every tool output is written to a revisable file
+  3. Transparency: Every tool displays a HITL warning before use
+
+- **Workflow**: AI prepares → Engineer validates → No automatic platform action
+
+### LLM Integration
+
+- `tools/llm_client.py` + Ollama `qwen2.5-coder:7b`: domain suggestions, JSON strict format, heuristic fallback
+- Optional: can be disabled via environment variables
+- Falls back to deterministic heuristics
+
+### Public Contracts (`tools/contract_context.py`)
+
+- Reads `llms.txt` from source repositories
+- Drift report generation
+- Broken link detection
+- Provider/method consistency check with source repositories
+
+---
+
+## 7. What it Demonstrates
+
+- Ability to read and understand OKA extensibility repositories
+- Qualification, diagnosis and resolution of client tickets
+- Respect for `HealthCheckRule`, `DataEnhancer` and webhook contracts
+- Capitalization via a method and reusable tools
+- Human-in-the-loop at every step
+- Remote 2D/3D visualization and portals (TICKET-008)
+- CCME support (partial)
+- Automation, training, R&D and tests
+- Technical English writing
+
+---
+
+## 8. Tests and CI
 
 ```bash
 make test
 ```
 
-Pour inspecter les contrats publics (si les dépôts `../oka_*` sont présents) :
+To inspect public contracts (if `../oka_*` repositories are present):
 
 ```bash
 make contracts
 ```
 
-La suite couvre :
+The test suite covers:
 
-- `test_classifier.py` : les 9 familles de tickets, dont portail/visualisation et CCME ;
-- `test_diagnostic_helper.py` : checklist non vide pour toutes les familles et composants ;
-- `test_resolution_contracts.py` : compilation, AST, contrat `params_model`,
-  `TypeError` à la définition d’une règle sans `params_model`, contrat enhancer ;
-- `test_tools.py` : exécution des 8 outils, HITL, génération de règle compilable,
-  providers réels des 9 domaines, noms de règle assainis, seuils ordonnés,
-  profil de formation, colonnes de priorisation ;
-- `test_gradio_app.py` : construction de l’interface, onglet Profil, rendu des
-  livrables, coloration des scripts Bash/PowerShell/Nginx et auth optionnelle ;
-- `test_llms_contract.py` : parsing des `llms.txt`, détection des liens cassés,
-  cohérence providers/méthodes du générateur avec les dépôts sources ;
-- `test_llm_client.py` : parsing JSON, payload Ollama, serveur HTTP simulé,
-  indisponibilité et configuration par variables d’environnement ;
-- `test_rule_generator_llm.py` : suggestion Qwen, priorité des mots-clés,
-  validation et normalisation des seuils, garde-fou de plausibilité et repli
-  heuristique.
+- `test_classifier.py`: 9 ticket families, including portal/visualization and CCME
+- `test_diagnostic_helper.py`: non-empty checklist for all families and components
+- `test_resolution_contracts.py`: compilation, AST, `params_model` contract,
+  `TypeError` at rule definition without `params_model`, enhancer contract
+- `test_tools.py`: execution of 8 tools, HITL, compilable rule generation,
+  real providers of 9 domains, sanitized rule names, ordered thresholds,
+  training profile, prioritization columns
+- `test_gradio_app.py`: interface construction, Profile tab, deliverables rendering,
+  Bash/PowerShell/Nginx script coloring and optional auth
+- `test_llms_contract.py`: `llms.txt` parsing, broken link detection,
+  provider/method consistency with source repositories
+- `test_llm_client.py`: JSON parsing, Ollama payload, simulated HTTP server,
+  unavailability and environment variable configuration
+- `test_rule_generator_llm.py`: Qwen suggestion, keyword priority,
+  validation and threshold normalization, plausibility guard and heuristic fallback
 
-**100 tests passent** avec `make test`. Les tests `llms.txt` sont ignorés si les
-dépôts `../oka_*` sont absents ; définir `OKA_SOURCE_ROOT` pour les activer. La CI
-GitHub Actions exécute `uv sync`, `ruff` puis `pytest` sur chaque push et pull
-request.
+**100 tests pass** with `make test`. The `llms.txt` tests are ignored if the
+`../oka_*` repositories are absent; set `OKA_SOURCE_ROOT` to enable them.
+GitHub Actions CI runs `uv sync`, `ruff` then `pytest` on each push and pull request.
 
 ---
 
-## 9. Limites assumées
+## 9. Assumed Limits
 
-- **Pas d’instance OKA réelle** : les règles sont compilées et vérifiées
-  statiquement, pas exécutées contre la plateforme.
-- **Générateur de règle** : template à heuristiques, providers alignés sur
-  `oka_healthchecks`, mais seuils et extraction fine des DTO à valider.
-- **Pas de SDK OKA fourni** : le test de contrat utilise un stub minimal pour
-  vérifier le `TypeError` et la présence de `params_model`.
-- **Pas de LLM obligatoire** : fallback heuristique déterministe ; Ollama/Qwen
-  est optionnel, local, et doit être validé par l’ingénieur.
-- **Enhancer TICKET-004** : validé statiquement ; `pandas` n’est pas une
-  dépendance runtime du POC.
-- **Interface Gradio locale** : pas d’authentification par défaut ; `GRADIO_AUTH`
-  active une auth basique, mais un reverse proxy reste requis pour une exposition
-  publique.
-- **8 tickets simulés** : ils démontrent la méthode, pas un historique réel.
-- **Portail et visualisation non déployés** : le runbook et les scripts sont
-  fournis, mais aucune infrastructure AWS/GPU réelle n’est attachée au POC.
-- **CCME partiel** : checklist générique uniquement, faute de dépôt ou d’instance
-  CCME dans le périmètre.
-- **Anglais oral non démontrable** : l’anglais technique écrit est couvert par
-  la synthèse de TICKET-008.
+- **No actual OKA instance**: rules are compiled and checked statically, not executed against the platform
+- **Rule generator**: template with heuristics, providers aligned with `oka_healthchecks`, but thresholds and fine DTO extraction need validation
+- **No OKA SDK provided**: contract testing uses a minimal stub to verify `TypeError` and `params_model` presence
+- **No mandatory LLM**: deterministic heuristic fallback; Ollama/Qwen is optional, local, and must be validated by the engineer
+- **TICKET-004 Enhancer**: validated statically; `pandas` is not a runtime dependency of the POC
+- **Local Gradio interface**: no default authentication; `GRADIO_AUTH` enables basic auth, but a reverse proxy is required for public exposure
+- **8 simulated tickets**: they demonstrate the method, not a real history
+- **Portal and visualization not deployed**: the runbook and scripts are provided, but no actual AWS/GPU infrastructure is attached to the POC
+- **Partial CCME**: only generic checklist, due to lack of CCME repository or instance in scope
+- **Oral English not demonstrable**: technical English writing is covered by the TICKET-008 summary
 
 ---
 
-## 10. Références
+## 10. References
 
-- Dépôts sources : `../oka_healthchecks`, `../oka_dataenhancers`, `../oka_webhooks`
-- Matrice profil : [`docs/profile_alignment.md`](docs/profile_alignment.md)
-- Documentation OKA : https://doc.oka.how
-- Plateforme OKA : https://oka.how
-- UCit : https://ucit.fr
-- Dépôt du POC : `git@ssh.bitbucket.org:lavaud_olivier/hpc-oka-support-desk.git`
+- Source repositories: `../oka_healthchecks`, `../oka_dataenhancers`, `../oka_webhooks`
+- Profile matrix: [`docs/profile_alignment.md`](docs/profile_alignment.md)
+- OKA Documentation: https://doc.oka.how
+- OKA Platform: https://oka.how
+- UCit: https://ucit.fr
+- POC Repository: `git@ssh.bitbucket.org:lavaud_olivier/hpc-oka-support-desk.git`
