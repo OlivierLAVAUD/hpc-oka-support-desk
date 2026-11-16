@@ -13,7 +13,7 @@ account="fusion-plasma", quota_core_hours=10000, warn_pct=0.80, critical_pct=0.9
 - [x] Le compte cible est identifiable via grouping_size suffisant
 
 ## Preuves observées
-- Fichier source : ./oka_healthchecks/resources/cores_account_quota_rule.py
+- Fichier source : ../oka_healthchecks/resources/cores_account_quota_rule.py
 - Params par défaut : account="project_x", quota_core_hours=10000, warn_pct=0.80, critical_pct=0.90
 - Le default "project_x" doit être remplacé par "fusion-plasma"
 

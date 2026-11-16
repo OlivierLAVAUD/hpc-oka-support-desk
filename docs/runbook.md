@@ -21,6 +21,9 @@ avec les commandes et fichiers de référence.
 ### Commandes
 ```bash
 uv run python tools/diagnostic_helper.py --family configuration --component resources
+OKA_LLM=ollama uv run python tools/rule_generator.py "Alerter si le quota dépasse 80 %" --llm
+make contracts     # Vérifier les contrats llms.txt et les liens d'exemples
+make llm-check     # Vérifier Ollama et le modèle Qwen, si le mode LLM est utilisé
 make test          # Vérifier les contrats
 make lint          # Vérifier la qualité du code
 ```

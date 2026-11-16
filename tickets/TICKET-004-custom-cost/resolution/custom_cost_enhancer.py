@@ -25,10 +25,10 @@ import logging
 import re
 
 import pandas as pd
-from applications.data_manager.lib.enhancer import DataEnhancer
 from pydantic import BaseModel, Field
 
 import lib.common.oka_constants.constants as oka_constants
+from applications.data_manager.lib.enhancer import DataEnhancer
 
 logger = logging.getLogger("oka_main")
 

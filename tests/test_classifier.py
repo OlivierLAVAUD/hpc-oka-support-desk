@@ -100,3 +100,8 @@ def test_classifier_ccme():
     result = _run_classifier("Le portail CCME ne démarre plus, authentification LDAP en erreur")
     assert result["family"] == "ccme"
     assert result["component"] == "CCME"
+
+
+def test_classifier_production_is_not_critical_by_itself():
+    result = _run_classifier("Demande de formation en production")
+    assert result["severity"] != "critical"

@@ -9,5 +9,5 @@ jobs:
       - uses: actions/checkout@v4
       - uses: astral-sh/setup-uv@v3
       - run: uv sync
-      - run: uv run ruff check tools/ tests/ tickets/ app.py
+      - run: uv run ruff check tools/ tests/ tickets/ app.py interface_cli.py
       - run: uv run pytest -v

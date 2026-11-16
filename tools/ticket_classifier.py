@@ -61,8 +61,8 @@ KEYWORDS = {
 }
 
 SEVERITY_KEYWORDS = {
-    "critical": ["bloquant", "urgent", "critique", "production"],
-    "high": ["élevée", "important", "pas d'alerte", "vide", "écran noir", "déconnect"],
+    "critical": ["bloquant", "urgent", "critique"],
+    "high": ["élevée", "important", "pas d'alerte", "vide", "écran noir", "déconnect", "production"],
     "medium": ["moyenne", "bruit", "trop d'alertes", "personnalisé"],
     "low": ["formation", "demande", "planifiée", "basse"],
 }

@@ -14,7 +14,7 @@ silencieuse (retourne []) car l'échantillon est statistiquement trop petit pour
 - [x] Pas d'alerte OK explicite lorsque min_jobs n'est pas atteint
 
 ## Preuves observées
-- Fichier source : ./oka_healthchecks/jobs/failed_jobs_rule.py
+- Fichier source : ../oka_healthchecks/jobs/failed_jobs_rule.py
 - Param min_jobs par défaut : 10
 - Code : `if total < self.params.min_jobs: return []`
 - Workload client : 3 jobs sur la période

@@ -10,7 +10,7 @@ et prévention.
 | Champ | Valeur |
 |-------|--------|
 | **Symptôme** | Une règle HealthCheck ne lève aucune alerte malgré des événements |
-| **Cause** | Le nombre de jobs est inférieur à `min_jobs` (défaut 10), la règle retourne `[]` |
+| **Cause** | Le nombre de jobs est inférieur à `min_jobs` (défaut 10 dans la règle source ; 3 dans l'adaptation TICKET-002), la règle retourne `[]` |
 | **Solution** | Réduire `min_jobs` ou agréger sur une période plus longue |
 | **Prévention** | Remonter à la R&D une alerte OK explicite quand `min_jobs` n'est pas atteint |
 | **Ticket** | TICKET-002 |

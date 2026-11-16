@@ -14,7 +14,7 @@ le calcul d'empreinte carbone est impossible.
 - [x] Dépendances externes : pymysql (EAR from DB) ou eacct CLI (EAR from eacct)
 
 ## Preuves observées
-- Fichier source : ./oka_dataenhancers/CO2/carbon_cost_RTE.py
+- Fichier source : ../oka_dataenhancers/CO2/carbon_cost_RTE.py
 - L'enhancer lit `oka_constants.ENERGY` et calcule `elec_kwh = energy / JOULES_PER_KWH`
 - Si ENERGY absente, le calcul de CARBON_FOOTPRINT ne peut pas s'effectuer
 

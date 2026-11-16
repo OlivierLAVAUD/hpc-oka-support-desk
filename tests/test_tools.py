@@ -20,6 +20,8 @@ from pathlib import Path
 
 import pytest
 
+from tools.rule_generator import DOMAIN_SPECS
+
 ROOT = Path(__file__).resolve().parents[1]
 TOOLS = ROOT / "tools"
 
@@ -121,6 +123,89 @@ def test_rule_generator_outputs_contract():
     assert "AlertLevel.CRITICAL" in source
     assert "AlertLevel.HIGH" in source
     assert source.index("AlertLevel.CRITICAL") < source.index("AlertLevel.HIGH")
+
+
+def test_rule_generator_keeps_dollar_and_sanitizes_name():
+    proc = _run(
+        "rule_generator",
+        "Alerter si le coût dépasse 50 $ par job à 90 %",
+        "--name",
+        "my-custom-rule",
+    )
+    assert proc.returncode == 0, proc.stderr
+
+    marker = proc.stdout.find('"""Rule:')
+    assert marker >= 0
+    source = proc.stdout[marker:]
+    compile(source, "<generated-rule>", "exec")
+    assert "class MyCustomRule(" in source
+    assert "50 $ par job" in source
+
+
+def test_rule_generator_single_threshold_stays_ordered():
+    proc = _run("rule_generator", "Alerter si le taux d'échec des jobs dépasse 99 %")
+    assert proc.returncode == 0, proc.stderr
+
+    marker = proc.stdout.find('"""Rule:')
+    source = proc.stdout[marker:]
+    compile(source, "<generated-rule>", "exec")
+    assert "default=0.89" in source
+    assert "default=0.99" in source
+
+
+@pytest.mark.parametrize(
+    ("text", "provider_call"),
+    [
+        ("Alerter si le taux d'échec des jobs dépasse 10 %", "self.jobs.scan_jobs("),
+        ("Alerter si le coût dépasse 25 000 €", "self.kpi.get_cost_metrics()"),
+        ("Alerter si la charge CPU du cluster est trop élevée", "self.cluster_load.get_core_load()"),
+        (
+            "Alerter si le quota de core-hours du compte atteint 80 %",
+            "self.cores.get_grouped_distribution(",
+        ),
+        (
+            "Alerter si la congestion dépasse 80 %",
+            "self.congestion.get_congestion_metrics(",
+        ),
+        (
+            "Alerter sur le statut des jobs avec trop d'échecs",
+            "self.state.get_jobs_status(",
+        ),
+        (
+            "Alerter si le slowdown médian dépasse 3",
+            "self.slowdown.get_slowdown_stats()",
+        ),
+        (
+            "Alerter si la consommation d'un groupe domine à 60 %",
+            "self.consumers.get_group_aggregation(",
+        ),
+        (
+            "Alerter si les utilisateurs simultanés dépassent 100",
+            "self.concurrent_users.get_running_and_waiting_users(",
+        ),
+    ],
+)
+def test_rule_generator_uses_real_provider(text: str, provider_call: str):
+    proc = _run("rule_generator", text)
+    assert proc.returncode == 0, proc.stderr
+
+    marker = proc.stdout.find('"""Rule:')
+    source = proc.stdout[marker:]
+    compile(source, "<generated-rule>", "exec")
+    assert provider_call in source
+    for fake_method in ("get_failure_rate", "get_cluster_load", "get_waiting_time"):
+        assert fake_method not in source
+
+
+@pytest.mark.parametrize("domain", sorted(DOMAIN_SPECS))
+def test_rule_generator_covers_every_documented_domain(domain: str):
+    proc = _run("rule_generator", "Alerter sur ce domaine", "--domain", domain)
+    assert proc.returncode == 0, proc.stderr
+
+    marker = proc.stdout.find('"""Rule:')
+    source = proc.stdout[marker:]
+    compile(source, "<generated-rule>", "exec")
+    assert f"Domain: {domain}." in source
 
 
 def test_training_generator_uses_profile():

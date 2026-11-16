@@ -1,39 +1,30 @@
-# Réponse client — TICKET-001
+# Réponse client — [TICKET-ID]
+
+⚠️ **BROUILLON — À RELIRE ET MODIFIER AVANT ENVOI**
 
 ## Destinataire
-Ahmed Benali — Institut de Recherche
+[CLIENT_NOM] — [CLIENT_ORG]
 
 ## Objet
-Configuration de votre règle de quota de core-hours (compte "fusion-plasma")
+Suite à votre demande — [SUJET]
 
 ## Corps du message
 
-Bonjour Ahmed,
+Bonjour [CLIENT_PRENOM],
 
-Nous faisons suite à votre demande concernant la mise en place d'alertes sur la
-consommation de core-hours pour le compte "fusion-plasma".
+Nous faisons suite à votre demande concernant [SUJET_TICKET].
 
 ### Cause identifiée
-Aucune règle de quota n'était configurée pour votre compte. OKA dispose d'une
-règle standard `cores_account_quota_rule.py` qu'il suffit de paramétrer.
+À compléter à partir du diagnostic
 
 ### Solution apportée
-Nous avons publié une règle de santé avec les paramètres suivants :
-- Compte surveillé : `fusion-plasma`
-- Quota : 10 000 core-hours
-- Seuil HIGH (alerte) : 80 % (8 000 core-hours)
-- Seuil CRITICAL (alerte critique) : 90 % (9 000 core-hours)
-
-La règle respecte le contrat OKA : `params_model` Pydantic, `_no_data_alert`
-en cas d'absence de données, et vérification de CRITICAL avant HIGH.
+À compléter à partir du diagnostic
 
 ### Preuve de résolution
-La règle est active sur votre workload. Vous recevrez une alerte HIGH dès que
-la consommation atteint 8 000 core-hours, et CRITICAL à 9 000 core-hours.
+À documenter (fichiers modifiés, règles republiées, tests effectués).
 
 ### Prévention
-Surveillez les alertes dans le dashboard OKA. Si vous modifiez votre quota,
-pensez à mettre à jour la règle correspondante.
+À compléter (recommandations pour éviter la récurrence).
 
 ### Disponibilité
 Notre équipe support reste à votre disposition pour toute question complémentaire.
@@ -43,5 +34,5 @@ L'équipe support UCit
 
 ---
 
-Validé par l'ingénieur : Support N1 | Date : 2026-10-11
-Bandeau BROUILLON supprimé : oui
+Validé par l'ingénieur : [NOM] | Date : [DATE]
+Bandeau BROUILLON supprimé : [OUI/NON]

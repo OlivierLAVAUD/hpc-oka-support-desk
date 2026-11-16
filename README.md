@@ -61,7 +61,7 @@ La matrice complète, avec les limites honnêtes, est dans
 **Prérequis** : Python 3.11+ et [uv](https://docs.astral.sh/uv/).
 
 ```bash
-# Installer les dépendances (pydantic, gradio, pytest, ruff)
+# Installer les dépendances (gradio, pytest, ruff)
 make install
 
 # Lancer l’interface Gradio
@@ -76,10 +76,16 @@ Pour l’exposer sur une autre interface réseau :
 GRADIO_SERVER_NAME=0.0.0.0 GRADIO_SERVER_PORT=7860 make ui
 ```
 
+Pour activer l’authentification HTTP basique :
+
+```bash
+GRADIO_AUTH="support:motdepasse" make ui
+```
+
 Autres commandes utiles :
 
 ```bash
-make lint    # ruff sur les outils, tests, tickets et app.py
+make lint    # ruff sur les outils, tests, tickets, app.py et interface_cli.py
 make test    # pytest
 make demo    # démo CLI rapide de trois outils
 ```
@@ -104,7 +110,7 @@ bandeau HITL ainsi que le journal de sortie de l’outil.
 | 1 · Qualifier | `ticket_classifier.py` | Demande collée ou `request.md` | JSON famille, sévérité, composant, confiance |
 | 2 · Diagnostiquer | `diagnostic_helper.py` | Famille + composant | Checklist Markdown de vérifications |
 | 3 · Répondre | `response_generator.py` | Contenu d’un `diagnosis.md` | Brouillon de réponse avec bandeau BROUILLON |
-| 4 · Générer une règle | `rule_generator.py` | Demande en français, domaine, nom | Code `HealthcheckRule` + checklist des 5 patterns |
+| 4 · Générer une règle | `rule_generator.py` | Demande en français, domaine, nom | Squelette `HealthcheckRule` pour 9 domaines + checklist des 5 patterns |
 | 5 · Former | `training_generator.py` | Nombre d’utilisateurs, niveau, besoins | Parcours en 3 modules |
 | 6 · Capitaliser | `automation_identifier.py`, `rnd_feedback_analyzer.py` | `lessons.md` des tickets | Automatisations par ROI, irritants R&D |
 
@@ -119,8 +125,10 @@ bandeau HITL ainsi que le journal de sortie de l’outil.
 7. **5 · Former** → générer un parcours pour 150 utilisateurs de niveau intermédiaire.
 8. **6 · Capitaliser** → afficher les automatisations et les irritants extraits des `lessons.md`.
 
-L’interface est **locale et sans authentification**. Pour un usage exposé, ajouter
-un reverse proxy et un contrôle d’accès.
+L’interface est **locale et sans authentification par défaut**. Définir
+`GRADIO_AUTH="utilisateur:motdepasse"` active l’authentification HTTP basique.
+Pour un usage réellement exposé, ajouter en plus un reverse proxy et un contrôle
+d’accès.
 
 ---
 
@@ -136,12 +144,12 @@ oka-support-desk/
 ├── interface_cli.py        # Fallback CLI
 ├── pyproject.toml          # Dépendances Python
 ├── uv.lock                 # Versions verrouillées
-├── Makefile                # make install / lint / test / demo / ui
+├── Makefile                # make install / lint / test / demo / ui / contracts / llm-check
 ├── LICENSE / NOTICE        # Apache 2.0 © 2026 UCit
 ├── .github/workflows/ci.yml # CI GitHub Actions (ruff + pytest)
 ├── templates/              # 4 templates de ticket
 ├── tickets/                # 8 tickets clients, 8 résolutions
-├── tools/                  # 8 outils IA + HITL
+├── tools/                  # 8 outils IA + HITL, contrats llms.txt et client Ollama
 ├── docs/                   # Runbook, known issues, escalade, profil, CCME
 └── tests/                  # Contrats, outils, interface Gradio
 ```
@@ -152,7 +160,7 @@ oka-support-desk/
 |---|---|---|
 | `oka_healthchecks` | 68 règles HealthCheck, 9 domaines | `resources/cores_account_quota_rule.py`, `jobs/failed_jobs_rule.py`, `kpi/high_cost_rule.py`, `load/core_load_rule.py` |
 | `oka_dataenhancers` | 8 Data Enhancers, 5 catégories | `costs/costs_demo.py`, `CO2/carbon_cost_RTE.py` |
-| `oka_webhooks` | 4 bridges webhook (SES, Slack, Jira, Reporting) | `oka-slack-bridge/app.py`, `oka-slack-bridge/.service` |
+| `oka_webhooks` | 4 bridges webhook (SES, Slack, Jira, Reporting) | `oka-slack-bridge/app.py`, `oka-slack-bridge/oka-slack-bridge.service` |
 
 Les trois dépôts sont sous licence Apache 2.0, version `2026.10.0`, testés
 contre **OKA 3.3.0**. Les chiffres réels sont **68 règles** et **8 enhancers**
@@ -190,8 +198,25 @@ livrables et les garde-fous.
 2. **Traçabilité** : chaque sortie est affichée ou écrite dans un fichier révisable.
 3. **Transparence** : chaque outil affiche un avertissement HITL.
 
-Les outils utilisent une heuristique déterministe, sans dépendance cloud. Un LLM
-local via Ollama reste optionnel.
+Les outils utilisent une heuristique déterministe, sans dépendance cloud. Un
+**LLM local optionnel via Ollama** peut affiner la génération de règle, avec
+`qwen2.5-coder:7b` par défaut. Aucun appel cloud n’est effectué.
+
+```bash
+ollama serve
+ollama pull qwen2.5-coder:7b
+make llm-check
+OKA_LLM=ollama uv run python tools/rule_generator.py \
+  "Alerter si le taux d'échec des jobs dépasse 10 %" --llm
+```
+
+Les mots-clés métier donnent un domaine prioritaire ; le LLM propose le domaine
+restant, le nom et les seuils. Le template, la validation déterministe et le
+fallback heuristique restent maîtres. Les nombres explicites du client priment
+toujours sur la suggestion du modèle, et les seuils trop éloignés des défauts du
+domaine sont rejetés. Timeout par défaut :
+60 s (cold start), ajustable via `OKA_LLM_TIMEOUT`. Dans Gradio, cocher
+« Utiliser Ollama (Qwen) » dans l’onglet de génération de règle.
 
 ---
 
@@ -209,7 +234,10 @@ local via Ollama reste optionnel.
 | Appliquer les patterns UCit | `frozenset`, `_FAILED_STATES`, `_no_data_alert`, `min_jobs`, CRITICAL avant HIGH |
 | Méthode reproductible | `METHOD.md` et les 8 tickets |
 | IA + HITL | `app.py` et les 8 outils, avec journal et validation humaine |
-| Tests de contrat | 41 tests : compilation, AST, `TypeError` sans `params_model`, outils, interface |
+| LLM local optionnel | `tools/llm_client.py` + Ollama `qwen2.5-coder:7b` : suggestion de domaine/seuils, JSON strict, fallback heuristique |
+| Génération de règle ancrée sur les sources | `rule_generator.py` : 9 domaines OKA, providers/méthodes réels (`scan_jobs`, `get_core_load`, `get_congestion_metrics`…), seuils ratio/percent/absolu et contrôle du provider dans `llms.txt` |
+| Contrats publics | `tools/contract_context.py` : lecture des `llms.txt`, rapport de dérive, détection des liens d’exemples cassés |
+| Tests de contrat | 100 tests : compilation, AST, `TypeError` sans `params_model`, outils, interface, auth, cohérence `llms.txt`, client Ollama |
 
 ---
 
@@ -219,6 +247,12 @@ local via Ollama reste optionnel.
 make test
 ```
 
+Pour inspecter les contrats publics (si les dépôts `../oka_*` sont présents) :
+
+```bash
+make contracts
+```
+
 La suite couvre :
 
 - `test_classifier.py` : les 9 familles de tickets, dont portail/visualisation et CCME ;
@@ -226,12 +260,22 @@ La suite couvre :
 - `test_resolution_contracts.py` : compilation, AST, contrat `params_model`,
   `TypeError` à la définition d’une règle sans `params_model`, contrat enhancer ;
 - `test_tools.py` : exécution des 8 outils, HITL, génération de règle compilable,
+  providers réels des 9 domaines, noms de règle assainis, seuils ordonnés,
   profil de formation, colonnes de priorisation ;
 - `test_gradio_app.py` : construction de l’interface, onglet Profil, rendu des
-  livrables et coloration des scripts Bash/PowerShell/Nginx.
+  livrables, coloration des scripts Bash/PowerShell/Nginx et auth optionnelle ;
+- `test_llms_contract.py` : parsing des `llms.txt`, détection des liens cassés,
+  cohérence providers/méthodes du générateur avec les dépôts sources ;
+- `test_llm_client.py` : parsing JSON, payload Ollama, serveur HTTP simulé,
+  indisponibilité et configuration par variables d’environnement ;
+- `test_rule_generator_llm.py` : suggestion Qwen, priorité des mots-clés,
+  validation et normalisation des seuils, garde-fou de plausibilité et repli
+  heuristique.
 
-**41 tests passent** avec `make test`. La CI GitHub Actions exécute `uv sync`,
-`ruff` puis `pytest` sur chaque push et pull request.
+**100 tests passent** avec `make test`. Les tests `llms.txt` sont ignorés si les
+dépôts `../oka_*` sont absents ; définir `OKA_SOURCE_ROOT` pour les activer. La CI
+GitHub Actions exécute `uv sync`, `ruff` puis `pytest` sur chaque push et pull
+request.
 
 ---
 
@@ -239,13 +283,17 @@ La suite couvre :
 
 - **Pas d’instance OKA réelle** : les règles sont compilées et vérifiées
   statiquement, pas exécutées contre la plateforme.
+- **Générateur de règle** : template à heuristiques, providers alignés sur
+  `oka_healthchecks`, mais seuils et extraction fine des DTO à valider.
 - **Pas de SDK OKA fourni** : le test de contrat utilise un stub minimal pour
   vérifier le `TypeError` et la présence de `params_model`.
-- **Pas de LLM obligatoire** : fallback heuristique déterministe, Ollama optionnel.
+- **Pas de LLM obligatoire** : fallback heuristique déterministe ; Ollama/Qwen
+  est optionnel, local, et doit être validé par l’ingénieur.
 - **Enhancer TICKET-004** : validé statiquement ; `pandas` n’est pas une
   dépendance runtime du POC.
-- **Interface Gradio locale** : sans authentification, à ne pas exposer
-  publiquement sans reverse proxy et contrôle d’accès.
+- **Interface Gradio locale** : pas d’authentification par défaut ; `GRADIO_AUTH`
+  active une auth basique, mais un reverse proxy reste requis pour une exposition
+  publique.
 - **8 tickets simulés** : ils démontrent la méthode, pas un historique réel.
 - **Portail et visualisation non déployés** : le runbook et les scripts sont
   fournis, mais aucune infrastructure AWS/GPU réelle n’est attachée au POC.

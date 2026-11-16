@@ -13,12 +13,19 @@
 # limitations under the License.
 """Tests de l'interface Gradio."""
 
-from app import TICKET_NAMES, build_app, profile_markdown, ticket_markdown
+import pytest
+
+from app import DOMAINS, TICKET_NAMES, auth_config, build_app, profile_markdown, ticket_markdown
+from tools.rule_generator import DOMAIN_SPECS
 
 
 def test_app_builds_without_launching():
     demo = build_app()
     assert demo is not None
+
+
+def test_domain_dropdown_covers_rule_generator():
+    assert set(DOMAIN_SPECS) <= set(DOMAINS)
 
 
 def test_ticket_markdown_contains_deliverables():
@@ -48,3 +55,19 @@ def test_ticket_markdown_fences_support_scripts():
     assert "```bash" in content
     assert "```powershell" in content
     assert "```nginx" in content
+
+
+def test_auth_config_is_optional(monkeypatch):
+    monkeypatch.delenv("GRADIO_AUTH", raising=False)
+    assert auth_config() is None
+
+
+def test_auth_config_reads_credentials(monkeypatch):
+    monkeypatch.setenv("GRADIO_AUTH", "support:secret")
+    assert auth_config() == ("support", "secret")
+
+
+def test_auth_config_rejects_malformed_value(monkeypatch):
+    monkeypatch.setenv("GRADIO_AUTH", "support")
+    with pytest.raises(ValueError):
+        auth_config()

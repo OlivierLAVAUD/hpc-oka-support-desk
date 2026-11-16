@@ -14,7 +14,7 @@ pics ponctuels.
 - [x] Pattern CRITICAL avant HIGH respecté dans _resolve_alert_level
 
 ## Preuves observées
-- Fichier source : ./oka_healthchecks/kpi/high_cost_rule.py
+- Fichier source : ../oka_healthchecks/kpi/high_cost_rule.py
 - Code : `if total_cost >= self.params.cost_critical: ... elif total_cost >= self.params.cost_high: ...`
 - Aucun paramètre min_jobs dans la classe Params
 

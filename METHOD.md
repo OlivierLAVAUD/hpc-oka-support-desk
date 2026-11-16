@@ -58,19 +58,25 @@ et évaluer la sévérité.
 **Objectif** : Produire une résolution technique conforme aux contrats OKA.
 
 **Actions** :
-1. Utiliser `tools/rule_generator.py` pour générer une règle HealthCheck ; pour
-   un enhancer, s'inspirer de `oka_dataenhancers/costs/costs_demo.py`
-2. Vérifier les 5 patterns obligatoires (checklist affichée par l'outil) :
+1. Utiliser `tools/rule_generator.py` pour générer un squelette de règle
+   HealthCheck (9 domaines OKA, providers réels) ; ajouter `--llm` ou
+   `OKA_LLM=ollama` pour une suggestion locale Qwen, toujours validée avant
+   usage. Pour un enhancer, s'inspirer de
+   `../oka_dataenhancers/costs/costs_demo.py`
+2. Contrôler le provider et la méthode dans `../oka_healthchecks/llms.txt`
+   (`make contracts`), sans s'y fier aveuglément : les liens peuvent dériver
+3. Vérifier les 5 patterns obligatoires (checklist affichée par l'outil) :
    - `params_model` Pydantic avec valeurs par défaut
    - `evaluate()` / `run()` conforme
-   - `_no_data_alert` quand provider échoue
+   - `_no_data_alert` quand le provider échoue (convention majoritaire)
    - CRITICAL vérifié avant HIGH
    - `min_jobs` guard si applicable
-3. Pour un portail ou une visualisation, appliquer le runbook
+4. Valider les seuils par défaut et la métrique extraite du DTO : le générateur
+   produit un squelette, pas une règle publiable telle quelle
+5. Pour un portail ou une visualisation, appliquer le runbook
    `TICKET-008/resolution/remote_viz_portal_runbook.md` (Linux/Windows/AWS)
-4. Écrire le fichier de résolution dans `tickets/TICKET-XXX/resolution/`
-5. Tester le contrat avec `tests/test_resolution_contracts.py`
-
+6. Écrire le fichier de résolution dans `tickets/TICKET-XXX/resolution/`
+7. Tester le contrat avec `tests/test_resolution_contracts.py`
 **Livrables** : `tickets/TICKET-XXX/resolution/*.py`
 
 **Garde-fous** :

@@ -14,7 +14,7 @@ client ("etudiant_.*").
 - [x] Toutes les colonnes modifiées sont documentées
 
 ## Preuves observées
-- Fichier source : ./oka_dataenhancers/costs/costs_demo.py
+- Fichier source : ../oka_dataenhancers/costs/costs_demo.py
 - Params standards : CPU_HOUR_COST=0.02, GPU_HOUR_COST=0.04, GPU_PARTITION="gpu",
   DISC_ACCOUNT_CPU_HOURS_COST=0.01, DISC_ACCOUNT=r"contract_fusion_.*"
 - Colonne modifiée : Cost (via oka_constants.COST)

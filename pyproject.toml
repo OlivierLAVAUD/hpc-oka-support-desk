@@ -5,8 +5,10 @@ description = "POC support UCit pour la plateforme OKA"
 requires-python = ">=3.11"
 dependencies = [
     "gradio>=6.0,<7.0",
-    "pydantic>=2.0",
 ]
+
+# pydantic is only imported by the rule skeletons emitted as text by
+# tools/rule_generator.py; it is not a runtime dependency of this POC.
 
 [dependency-groups]
 dev = [
@@ -27,4 +29,7 @@ target-version = "py311"
 line-length = 100
 
 [tool.ruff.lint]
-select = ["E4", "E7", "E9", "F"]
+select = ["E4", "E7", "E9", "F", "I", "B", "UP"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["applications", "lib"]

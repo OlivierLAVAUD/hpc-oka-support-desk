@@ -52,7 +52,18 @@ COMPONENTS = [
     "Portail & Visualisation",
     "CCME",
 ]
-DOMAINS = ["auto", "jobs", "kpi", "load", "resources", "congestion", "visualization"]
+DOMAINS = [
+    "auto",
+    "jobs",
+    "kpi",
+    "load",
+    "resources",
+    "congestion",
+    "state",
+    "throughput",
+    "consumers",
+    "concurrent_users",
+]
 CODE_LANGUAGES = {
     ".py": "python",
     ".sh": "bash",
@@ -201,7 +212,7 @@ def generate_response(diagnosis_text: str):
     return draft, journal(stderr, return_code)
 
 
-def generate_rule(request_text: str, domain: str, rule_name: str):
+def generate_rule(request_text: str, domain: str, rule_name: str, use_llm: bool = False):
     """Generate a HealthcheckRule skeleton from a natural-language request."""
     if not request_text.strip():
         return "⚠️ Décrivez la règle souhaitée.", "", "⚠️ Demande vide."
@@ -211,6 +222,8 @@ def generate_rule(request_text: str, domain: str, rule_name: str):
         args.extend(["--domain", domain])
     if rule_name.strip():
         args.extend(["--name", rule_name.strip()])
+    if use_llm:
+        args.append("--llm")
 
     stdout, stderr, return_code = run_tool("rule_generator", request_text, *args)
     marker = stdout.find('"""Rule:')
@@ -416,6 +429,10 @@ def build_app() -> gr.Blocks:
                             label="Nom technique (optionnel)",
                             placeholder="custom_jobs_threshold_rule",
                         )
+                        rule_llm = gr.Checkbox(
+                            value=False,
+                            label="Utiliser Ollama (Qwen) — local et optionnel",
+                        )
                         rule_button = gr.Button("Générer la règle", variant="primary")
                     with gr.Column():
                         rule_checklist = gr.Markdown(label="Checklist des 5 patterns")
@@ -428,7 +445,7 @@ def build_app() -> gr.Blocks:
                         rule_journal = gr.Markdown()
                 rule_button.click(
                     generate_rule,
-                    [rule_request, rule_domain, rule_name],
+                    [rule_request, rule_domain, rule_name, rule_llm],
                     [rule_checklist, rule_code, rule_journal],
                 )
 
@@ -486,6 +503,17 @@ def build_app() -> gr.Blocks:
     return demo
 
 
+def auth_config() -> tuple[str, str] | None:
+    """Read optional basic-auth credentials from GRADIO_AUTH="user:password"."""
+    raw = os.getenv("GRADIO_AUTH", "").strip()
+    if not raw:
+        return None
+    user, separator, password = raw.partition(":")
+    if not separator or not user or not password:
+        raise ValueError("GRADIO_AUTH doit être au format 'utilisateur:motdepasse'.")
+    return user, password
+
+
 def main() -> None:
     """Launch the Gradio server."""
     demo = build_app()
@@ -493,6 +521,7 @@ def main() -> None:
     demo.launch(
         server_name=os.getenv("GRADIO_SERVER_NAME", "127.0.0.1"),
         server_port=int(os.getenv("GRADIO_SERVER_PORT", "7860")),
+        auth=auth_config(),
         theme=gr.themes.Soft(),
         css=CSS,
     )

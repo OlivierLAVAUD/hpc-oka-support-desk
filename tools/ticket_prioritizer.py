@@ -104,8 +104,12 @@ def main() -> None:
     all_tokens = [info["tokens"] for _, info in tickets]
     rows = []
     for name, info in tickets:
-        others = [tokens for other_name, tokens in zip([n for n, _ in tickets], all_tokens)
-                  if other_name != name]
+        names = [ticket_name for ticket_name, _ in tickets]
+        others = [
+            tokens
+            for other_name, tokens in zip(names, all_tokens, strict=True)
+            if other_name != name
+        ]
         similarity = _similarity(info["tokens"], others)
         rows.append((info, name, similarity))
 

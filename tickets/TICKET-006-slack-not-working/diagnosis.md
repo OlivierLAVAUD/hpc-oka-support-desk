@@ -15,7 +15,7 @@ ces rejets, mais le client n'en a pas conscience.
 - [x] Logs namespacés : logging.getLogger("oka-slack-bridge")
 
 ## Preuves observées
-- Fichier source : ./oka_webhooks/oka-slack-bridge/app.py
+- Fichier source : ../oka_webhooks/oka-slack-bridge/app.py
 - Code : `if auth != f"Bearer {BEARER_TOKEN}": return jsonify({"error": "Unauthorized"}), 401`
 - Port par défaut : 5052
 - Variable d'env : BRIDGE_BEARER_TOKEN
