@@ -188,3 +188,15 @@ Voir `docs/ccme_deployment_checklist.md`.
 uv run python tools/training_generator.py --users 150 --level "débutant à intermédiaire"
 ```
 
+
+## Problèmes Nginx
+
+| Symptôme | Cause | Vérification | Solution |
+|---|---|---|---|
+| Erreur 502 Bad Gateway | Mauvaise configuration SSL ou backend inaccessible | Vérifier `ssl_certificate` et `ssl_certificate_key` ; ping le backend OKA | Vérifier les certificats SSL et l'adresse du backend ; redémarrer Nginx |
+| Timeout sur les connexions VNC | `proxy_timeout` trop court pour les sessions longues | Vérifier `proxy_timeout 1h` dans `viz.stream.conf` | Augmenter `proxy_timeout` à 2h ou plus |
+| Erreurs de diffusion SSE | `proxy_buffering on` provoque des retards | Vérifier `proxy_buffering off` dans `mcp.sse.conf` | Mettre `proxy_buffering off` et `proxy_read_timeout 30s` |
+| Erreur 504 Gateway Timeout | Délai d'attente dépassé pour les gros fichiers | Vérifier `proxy_read_timeout` | Augmenter `proxy_read_timeout` à 2h |
+| Certificat SSL expiré | Date d'expiration dépassée | Vérifier la date des certificats `oka.crt`/`viz.crt` | Renouveler les certificats SSL |
+| Connexion refusée sur port 443 | Nginx non en écoute ou firewall | Vérifier `listen 443 ssl` ; vérifier le firewall | Démarrer Nginx ; ouvrir le port 443 |
+

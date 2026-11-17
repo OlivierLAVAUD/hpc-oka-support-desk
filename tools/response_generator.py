@@ -19,9 +19,9 @@ import sys
 from pathlib import Path
 
 HITL_BANNER = """╔═══════════════════════════════════════════════════════════════╗
-║  AVERTISSEMENT HITL — À VALIDER PAR L'INGÉNIEUR SUPPORT      ║
-║  Ce brouillon de réponse doit être relu et modifié avant      ║
-║  tout envoi au client. Aucun envoi automatique.              ║
+║  HITL WARNING — TO BE VALIDATED BY THE SUPPORT ENGINEER      ║
+║  This draft response must be read and modified before      ║
+║  any sending to the client. No automatic sending.              ║
 ╚═══════════════════════════════════════════════════════════════╝"""
 
 
@@ -99,7 +99,7 @@ def main() -> None:
         draft = generate(sys.argv[1])
         out_path = Path(sys.argv[1]).parent / "response.md"
         out_path.write_text(draft, encoding="utf-8")
-        print(f"Brouillon généré : {out_path}")
+        print(f"Draft generated : {out_path}")
     else:
         print("Usage: response_generator.py <diagnosis.md>", file=sys.stderr)
         sys.exit(1)

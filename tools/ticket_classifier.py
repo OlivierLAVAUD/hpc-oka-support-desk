@@ -20,9 +20,9 @@ import sys
 from pathlib import Path
 
 HITL_BANNER = """╔═══════════════════════════════════════════════════════════════╗
-║  AVERTISSEMENT HITL — À VALIDER PAR L'INGÉNIEUR SUPPORT      ║
-║  Cette classification est une proposition, pas une décision.  ║
-║  L'ingénieur valide la famille, la sévérité et le composant.  ║
+║  HITL WARNING — TO BE VALIDATED BY THE SUPPORT ENGINEER      ║
+║  This classification is a proposal, not a decision.  ║
+║  The engineer validates the family, severity and component.  ║
 ╚═══════════════════════════════════════════════════════════════╝"""
 
 VALID_FAMILIES = [

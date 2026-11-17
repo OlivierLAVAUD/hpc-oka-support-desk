@@ -28,7 +28,7 @@ except ImportError:
     from contract_context import llms_path, provider_names, sections
 
 HITL_BANNER = """╔═══════════════════════════════════════════════════════════════╗
-║  AVERTISSEMENT HITL — À VALIDER PAR L'INGÉNIEUR SUPPORT      ║
+║  HITL WARNING — TO BE VALIDATED BY THE SUPPORT ENGINEER      ║
 ║  Le code généré est une proposition. Vérifier les 5 patterns ║
 ║  ci-dessous avant publication sur la plateforme OKA.          ║
 ╚═══════════════════════════════════════════════════════════════╝"""

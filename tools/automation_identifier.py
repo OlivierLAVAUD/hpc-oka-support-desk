@@ -19,7 +19,7 @@ import argparse
 from pathlib import Path
 
 HITL_BANNER = """╔═══════════════════════════════════════════════════════════════╗
-║  AVERTISSEMENT HITL — À VALIDER PAR L'INGÉNIEUR SUPPORT      ║
+║  HITL WARNING — TO BE VALIDATED BY THE SUPPORT ENGINEER      ║
 ║  Chaque automatisation est proposée, pas imposée. L'ingénieur ║
 ║  décide de l'implémenter ou non après analyse du ROI.         ║
 ╚═══════════════════════════════════════════════════════════════╝"""

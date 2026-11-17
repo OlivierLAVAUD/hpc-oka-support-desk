@@ -18,7 +18,7 @@
 import argparse
 
 HITL_BANNER = """╔══════════════════════════════════════════════════════════════╗
-║  AVERTISSEMENT HITL — À VALIDER PAR L'INGÉNIEUR SUPPORT      ║
+║  HITL WARNING — TO BE VALIDATED BY THE SUPPORT ENGINEER      ║
 ║  Ce parcours est un point de départ. L'ingénieur l'adapte     ║
 ║  au profil et aux besoins réels du client.                   ║
 ╚══════════════════════════════════════════════════════════════╝"""

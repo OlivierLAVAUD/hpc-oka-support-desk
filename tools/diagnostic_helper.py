@@ -19,9 +19,9 @@ import argparse
 import sys
 
 HITL_BANNER = """╔═══════════════════════════════════════════════════════════════╗
-║  AVERTISSEMENT HITL — À VALIDER PAR L'INGÉNIEUR SUPPORT      ║
-║  Cette checklist est une proposition. L'ingénieur documente   ║
-║  chaque vérification et valide la cause racine.              ║
+║  HITL WARNING — TO BE VALIDATED BY THE SUPPORT ENGINEER      ║
+║  This checklist is a proposal. The engineer documents   ║
+║  each verification and validates the root cause.              ║
 ╚═══════════════════════════════════════════════════════════════╝"""
 
 CHECKLISTS = {

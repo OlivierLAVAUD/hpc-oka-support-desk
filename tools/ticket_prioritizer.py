@@ -21,7 +21,7 @@ from datetime import date
 from pathlib import Path
 
 HITL_BANNER = """╔═══════════════════════════════════════════════════════════════╗
-║  AVERTISSEMENT HITL — À VALIDER PAR L'INGÉNIEUR SUPPORT      ║
+║  HITL WARNING — TO BE VALIDATED BY THE SUPPORT ENGINEER      ║
 ║  Cet ordre de priorité est un conseil, pas une décision.      ║
 ║  L'ingénieur valide l'ordre final de traitement.              ║
 ╚═══════════════════════════════════════════════════════════════╝"""
